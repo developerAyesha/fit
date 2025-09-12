@@ -1,0 +1,188 @@
+/* Onboarding-specific styles - completely isolated from global styles */
+
+.onboarding-form input[type="text"],
+.onboarding-form input[type="email"],
+.onboarding-form input[type="url"],
+.onboarding-form textarea,
+.onboarding-form select {
+  @apply border-gray-600 focus:border-[#fa2a00] focus:ring-[#fa2a00] focus:ring-2;
+}
+
+/* Custom radio button styling for better browser support */
+.onboarding-form input[type="radio"],
+.onboarding-form input[type="radio"]:focus,
+.onboarding-form input[type="radio"]:active {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #6b7280 !important;
+  border-radius: 50% !important;
+  background-color: transparent !important;
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form input[type="radio"]:checked,
+.onboarding-form input[type="radio"]:checked:focus,
+.onboarding-form input[type="radio"]:checked:active {
+  border-color: #fa2a00 !important;
+  background-color: #fa2a00 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+}
+
+/* Custom checkbox styling for better browser support */
+.onboarding-form input[type="checkbox"],
+.onboarding-form input[type="checkbox"]:focus,
+.onboarding-form input[type="checkbox"]:active {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #6b7280 !important;
+  border-radius: 4px !important;
+  background-color: transparent !important;
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form input[type="checkbox"]:checked,
+.onboarding-form input[type="checkbox"]:checked:focus,
+.onboarding-form input[type="checkbox"]:checked:active {
+  border-color: #fa2a00 !important;
+  background-color: #fa2a00 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+}
+
+.onboarding-form button[type="submit"],
+.onboarding-form .btn-primary {
+  @apply bg-[#fa2a00] hover:bg-[#fa2a00e6] text-white;
+}
+
+.onboarding-form .btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white;
+}
+
+/* Focus states for better accessibility */
+.onboarding-form input:focus,
+.onboarding-form textarea:focus,
+.onboarding-form select:focus {
+  @apply outline-none ring-2 ring-[#fa2a00] ring-opacity-50;
+}
+
+/* Custom radio button styling */
+.onboarding-form .radio-option {
+  @apply border-gray-600 hover:border-[#fa2a00] transition-colors;
+}
+
+.onboarding-form .radio-option.selected {
+  @apply border-[#fa2a00] bg-[#fa2a00]/10;
+}
+
+/* Custom checkbox styling */
+.onboarding-form .checkbox-option {
+  @apply border-gray-600 hover:border-[#fa2a00] transition-colors;
+}
+
+.onboarding-form .checkbox-option.checked {
+  @apply border-[#fa2a00] bg-[#fa2a00]/10;
+}
+
+/* Force orange styling for radio buttons and checkboxes - highest specificity */
+.onboarding-form label input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #6b7280 !important;
+  border-radius: 50% !important;
+  background-color: transparent !important;
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form label input[type="radio"]:checked {
+  border-color: #fa2a00 !important;
+  background-color: #fa2a00 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form label input[type="radio"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: white !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.onboarding-form label input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #6b7280 !important;
+  border-radius: 4px !important;
+  background-color: transparent !important;
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form label input[type="checkbox"]:checked {
+  border-color: #fa2a00 !important;
+  background-color: #fa2a00 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.onboarding-form label input[type="checkbox"]:checked::after {
+  content: '✓' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  transform: translate(-50%, -50%) !important;
+}

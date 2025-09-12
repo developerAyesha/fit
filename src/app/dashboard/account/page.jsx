@@ -1,0 +1,248 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { User, Mail, Calendar, LogOut, CreditCard, Lock, Loader2 } from "lucide-react";
+import { useAuth } from "@/context/authContext";
+
+export default function Account() {
+  const { user, logout, changePassword, loading } = useAuth();
+  const router = useRouter();
+
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [form, setForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth");
+    }
+  }, [user, loading, router]);
+
+  const handleSignOut = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      // Direct redirect to home page without any messages
+      router.push("/");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      // Still redirect even if logout fails
+      router.push("/");
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setIsChangingPassword(true);
+
+    if (form.newPassword.length < 6) {
+      setError("Password must be at least 6 characters");
+      setIsChangingPassword(false);
+      return;
+    }
+    if (form.newPassword !== form.confirmPassword) {
+      setError("Passwords do not match");
+      setIsChangingPassword(false);
+      return;
+    }
+
+    try {
+      const { error } = await changePassword(form.currentPassword, form.newPassword, form.confirmPassword);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage("✅ Password updated successfully");
+        setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      }
+    } catch (err) {
+      const errorMessage = "Failed to change password. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <p className="text-lg">Loading your account...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // Redirect to home page immediately if no user
+    router.push("/");
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold mb-2">Account Settings</h1>
+        <p className="text-lg text-gray-400 mb-10">
+          Manage your profile and account preferences
+        </p>
+
+        <div className="space-y-8 max-w-4xl">
+          {/* Profile Information */}
+          <Section title="Profile Information" icon={<User className="w-6 h-6 text-red-500" />}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Info label="Email Address" icon={<Mail className="w-5 h-5 text-red-500" />} value={user.email} />
+              <Info
+                label="Member Since"
+                icon={<Calendar className="w-5 h-5 text-red-500" />}
+                value={new Date(user.createdAt).toLocaleDateString()}
+              />
+            </div>
+          </Section>
+
+          {/* Subscription */}
+          <Section title="Subscription" icon={<CreditCard className="w-6 h-6 text-red-500" />}>
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-800">
+              <div>
+                <p className="font-semibold text-lg">{user.plan} Plan</p>
+                <p className="text-gray-400">Limited ad generations per month</p>
+              </div>
+              <span className="px-4 py-2 border rounded-lg text-gray-300">{user.plan}</span>
+            </div>
+            <div className="mt-6">
+              <button
+                disabled
+                className="px-6 py-2 border rounded-lg text-gray-400 cursor-not-allowed"
+              >
+                Upgrade Plan (Coming Soon)
+              </button>
+            </div>
+          </Section>
+
+          {/* Account Actions */}
+          <Section title="Account Actions">
+            {/* Sign out */}
+            <div className="flex justify-between items-center p-4 rounded-lg bg-gray-800 mb-6">
+              <div>
+                <p className="font-semibold text-lg">Sign Out</p>
+                <p className="text-gray-400">Sign out of your account on this device</p>
+              </div>
+              <button
+                onClick={handleSignOut}
+                disabled={isLoggingOut}
+                className="flex items-center gap-2 px-6 py-2 border rounded-lg hover:bg-red-600 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoggingOut ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Signing Out...
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-5 h-5" />
+                    Sign Out
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Change password */}
+            <div className="p-4 rounded-lg bg-gray-800">
+              <div className="mb-4">
+                <p className="font-semibold text-lg flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-red-500" />
+                  Change Password
+                </p>
+                <p className="text-gray-400">Update your account password</p>
+              </div>
+
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <Field
+                  label="Current Password"
+                  type="password"
+                  value={form.currentPassword}
+                  onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
+                />
+                <Field
+                  label="New Password"
+                  type="password"
+                  value={form.newPassword}
+                  onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
+                />
+                <Field
+                  label="Confirm New Password"
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                />
+
+                {error && <p className="text-sm text-red-400">{error}</p>}
+                {message && <p className="text-sm text-green-400">{message}</p>}
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={isChangingPassword}
+                    className="px-6 py-2 border rounded-lg hover:bg-red-600 hover:border-red-600"
+                  >
+                    {isChangingPassword ? "Updating..." : "Update Password"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --- Components --- */
+
+function Section({ title, icon, children }) {
+  return (
+    <div className="border border-gray-700 rounded-lg bg-gray-900 p-6">
+      <div className="flex items-center gap-3 mb-4">
+        {icon}
+        <h2 className="text-2xl font-bold">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Info({ label, icon, value }) {
+  return (
+    <div>
+      <label className="text-base font-semibold flex items-center gap-2 mb-1 text-gray-300">
+        {icon}
+        {label}
+      </label>
+      <p className="text-white pl-7">{value}</p>
+    </div>
+  );
+}
+
+function Field({ label, type = "text", value, onChange }) {
+  return (
+    <div>
+      <label className="block text-sm mb-1 text-gray-300">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+      />
+    </div>
+  );
+}
