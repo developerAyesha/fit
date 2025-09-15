@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Onboarding-specific styles - completely isolated from global styles */
 
 .onboarding-form input[type="text"],

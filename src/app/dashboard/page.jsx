@@ -6,6 +6,7 @@ import { useAuth } from "@/context/authContext";
 // import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { Zap, Library, Settings, Target } from "lucide-react";
 import Button from "@/utils/Button";
+import FacebookConnect from "@/componenets/FacebookConnect";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -89,6 +90,14 @@ export default function Dashboard() {
               <div className="text-3xl font-bold">{stat.value}</div>
             </div>
           ))}
+        </div>
+
+        {/* Facebook Integration */}
+        <div className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Integrations</h2>
+          <div className="max-w-md">
+            <FacebookConnect />
+          </div>
         </div>
 
         {/* Quick Actions */}
