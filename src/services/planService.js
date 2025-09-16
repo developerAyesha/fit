@@ -4,13 +4,30 @@ export const planService = {
   // Get all active plans
   getPlans: async () => {
     try {
-      const response = await Axios.get("/plans?active=true");
-      return { data: response.data, error: null };
+      const response = await Axios.get("/plans/list?active=true");
+      // Extract the data array from the API response
+      return { data: response.data.data, error: null };
     } catch (error) {
       return { 
         data: null, 
         error: {
           message: error.response?.data?.message || "Failed to fetch plans",
+          status: error.response?.status || 500
+        }
+      };
+    }
+  },
+
+  // Get single plan by ID
+  getPlanById: async (planId) => {
+    try {
+      const response = await Axios.get(`/plans/${planId}`);
+      return { data: response.data.data, error: null };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: {
+          message: error.response?.data?.message || "Failed to fetch plan details",
           status: error.response?.status || 500
         }
       };
@@ -65,3 +82,4 @@ export const planService = {
     }
   }
 };
+

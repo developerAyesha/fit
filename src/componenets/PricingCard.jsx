@@ -138,9 +138,14 @@ export default function PricingSection() {
   const router = useRouter();
 
   const handleSelectPlan = (plan) => {
+    console.log("plan in checkout plan",plan);
+    
     // Redirect to checkout page with plan ID
     router.push(`/checkout?plan=${plan._id}`);
   };
+
+  // Ensure plans is always an array
+  const safePlans = Array.isArray(plans) ? plans : [];
 
   if (loading) {
     return (
@@ -160,6 +165,30 @@ export default function PricingSection() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <div className="text-red-400 text-xl">Error loading plans: {error}</div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-4 py-2 bg-[#FE0010] text-white rounded-lg hover:bg-[#FE0010]/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!loading && safePlans.length === 0) {
+    return (
+      <section className="py-16 px-4 bg-[#0F0F12]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center">
+            <div className="text-white text-xl mb-4">No plans available at the moment</div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-[#FE0010] text-white rounded-lg hover:bg-[#FE0010]/90"
+            >
+              Refresh
+            </button>
           </div>
         </div>
       </section>
@@ -178,7 +207,7 @@ export default function PricingSection() {
 
         {/* Pricing Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {plans.map((plan, index) => {
+          {safePlans.map((plan, index) => {
             const isPopular = plan.is_popular;
             const isLifetime = plan.billing_period === 'one_time';
             

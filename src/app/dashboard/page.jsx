@@ -30,8 +30,15 @@ export default function Dashboard() {
       title: "Generate New Ad",
       description: "Create a new high-converting fitness ad",
       icon: Zap,
-      path: "/generate",
+      path: "/dashboard/generate",
       color: "bg-blue-500",
+    },
+    {
+      title: "Multi-Step Generator",
+      description: "Step-by-step Facebook ad creation",
+      icon: Target,
+      path: "/dashboard/generate-multistep",
+      color: "bg-red-500",
     },
     {
       title: "View Library",

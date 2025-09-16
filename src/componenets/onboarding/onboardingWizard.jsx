@@ -91,30 +91,30 @@ const OnboardingWizard = () => {
       try {
         const userId = user?._id;
         if (!userId) return;
-        const res = await Axios.get(`/onboarding/get-Onboarding-Info/${userId}`);
+        const res = await Axios.get(`/onboarding/get-Onboarding-Info`);
 
         if (res.data.success) {
-          if (res.data.progress?.step_status === "completed") {
+          if (res.data.data.progress?.step_status === "completed") {
             setCompleted(true);
             return;
           }
           console.log("Fetched Onboarding Data:", res.data.data);
           
-          if (res.data.data) {
+          if (res.data.data.data) {
             setData((prev) => ({
               ...prev,
-              ...res.data.data,
-              business: { ...prev.business, ...(res.data.data.business || {}) },
-              visual: { ...prev.visual, ...(res.data.data.visual || {}) },
-              campaign: { ...prev.campaign, ...(res.data.data.campaign || {}) },
-              social: { ...prev.social, ...(res.data.data.social || {}) },
-              brand: { ...prev.brand, ...(res.data.data.brand || {}) },
-              customer: { ...prev.customer, ...(res.data.data.customer || {}) },
+              ...res.data.data.data,
+              business: { ...prev.business, ...(res.data.data.data.business || {}) },
+              visual: { ...prev.visual, ...(res.data.data.data.visual || {}) },
+              campaign: { ...prev.campaign, ...(res.data.data.data.campaign || {}) },
+              social: { ...prev.social, ...(res.data.data.data.social || {}) },
+              brand: { ...prev.brand, ...(res.data.data.data.brand || {}) },
+              customer: { ...prev.customer, ...(res.data.data.data.customer || {}) },
             }));
           }
-          if (res.data.progress) {
-            setProgress(res.data.progress);
-            setCurrentStep(res.data.progress.current_step || 1);
+          if (res.data.data.progress) {
+            setProgress(res.data.data.progress);
+            setCurrentStep(res.data.data.progress.current_step || 1);
           }
         }
       } catch (err) {
@@ -160,7 +160,6 @@ const OnboardingWizard = () => {
     try {
       if (!userId) return { success: false };
       const res = await Axios.post(`/onboarding/save-step/${stepName}`, {
-        user_id: userId,
         data: stepData,
         current_step: currentStep,
       });
@@ -169,7 +168,7 @@ const OnboardingWizard = () => {
         setProgress(res.data.data.progress);
         // setData((prevData) => ({
         //   ...prevData,
-        //   ...res.data.data.OnboardingData
+        //   ...res.data.data.onboardingData
         // }));
       }
 

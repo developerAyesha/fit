@@ -16,9 +16,16 @@ export const usePlans = () => {
         setError(error.message);
         setPlans([]);
       } else {
-        setPlans(data.data || []);
+        // The service now extracts the data array, so we should get a direct array
+        if (Array.isArray(data)) {
+          setPlans(data);
+        } else {
+          console.warn('Unexpected data format:', data);
+          setPlans([]);
+        }
       }
     } catch (err) {
+      console.error('Error fetching plans:', err);
       setError('Failed to fetch plans');
       setPlans([]);
     } finally {
@@ -37,3 +44,4 @@ export const usePlans = () => {
     refetch: fetchPlans
   };
 };
+

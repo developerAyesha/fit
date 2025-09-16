@@ -9,7 +9,8 @@ class AdGenerationService {
     try {
       const params = category ? { category } : {};
       const response = await Axios.get(`/campaign-templates`, { params });
-      return response.data.data; // Your API returns { success: true, data: [...] }
+      // Extract the campaigns array from the paginated response
+      return response.data.data.data || response.data.data; // Handle both paginated and non-paginated responses
     } catch (error) {
       console.error('Error fetching campaign templates:', error);
       throw error;
@@ -20,7 +21,8 @@ class AdGenerationService {
   async getTopPerformingAds(campaignId) {
     try {
       const response = await Axios.get(`/ad-generation/campaigns/${campaignId}/top-ads`);
-      return response.data.data;
+      // Extract the ads array from the paginated response
+      return response.data.data.data || response.data.data;
     } catch (error) {
       console.error('Error fetching top performing ads:', error);
       throw error;
@@ -31,7 +33,8 @@ class AdGenerationService {
   async getAdTypes() {
     try {
       const response = await Axios.get(`/ad-generation/ad-types`);
-      return response.data.data;
+      // Extract the ad types array from the paginated response
+      return response.data.data.data || response.data.data;
     } catch (error) {
       console.error('Error fetching ad types:', error);
       throw error;

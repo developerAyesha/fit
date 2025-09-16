@@ -34,16 +34,15 @@ export default function CheckoutPage() {
   const fetchPlan = async (planId) => {
     try {
       setLoading(true);
-      const { data, error } = await planService.getPlans();
+      const { data, error } = await planService.getPlanById(planId);
       
       if (error) {
         setError(error.message);
         return;
       }
 
-      const plan = data.data.find(p => p._id === planId);
-      if (plan) {
-        setSelectedPlan(plan);
+      if (data) {
+        setSelectedPlan(data);
       } else {
         setError("Plan not found");
       }
@@ -257,3 +256,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

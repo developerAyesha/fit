@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   MessageSquare,
   Lightbulb,
@@ -18,6 +19,7 @@ import {
   Shield,
   BarChart3,
   File,
+  Settings,
 } from "lucide-react";
 import Button from "@/utils/Button";
 import { useAdGeneration } from "@/hooks/useAdGeneration";
@@ -182,6 +184,7 @@ function AdGeneratorCard({
 }
 
 export default function AdGenerator() {
+  const router = useRouter();
   const { user } = useAuth();
   const { campaigns, adTypes, loading, error, generateContent, loadTopAds } = useAdGeneration();
   const [selectedCampaign, setSelectedCampaign] = useState(null);
@@ -292,12 +295,23 @@ export default function AdGenerator() {
     <div className="container mx-auto px-4 py-8">
       {/* Page Heading */}
       <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-white mb-3 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
-            Ad Generator
-          </h1>
-          <p className="text-gray-400 text-lg">
-          Generate high-converting ad content powered by your brand setup
-        </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-extrabold text-white mb-3 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+                Ad Generator
+              </h1>
+              <p className="text-gray-400 text-lg">
+                Generate high-converting ad content powered by your brand setup
+              </p>
+            </div>
+            {/* <button
+              onClick={() => router.push('/dashboard/generate-multistep')}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <Settings className="w-5 h-5" />
+              Multi-Step Generator
+            </button> */}
+          </div>
       </div>
 
       {!selectedCampaign ? (
