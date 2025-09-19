@@ -82,3 +82,11 @@ The generator creates a complete Facebook ad configuration:
 - Connects to existing AI content generation API
 - Follows Facebook's ad requirements and best practices
 
+
+
+
+
+
+
+
+

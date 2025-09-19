@@ -1,11 +1,11 @@
 "use client";
 
-import MultiStepAdGenerator from "@/componenets/AdGenerator/MultiStepAdGenerator";
+import FiveAdTypesGenerator from "@/componenets/AdGenerator/FiveAdTypesGenerator";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function MultiStepAdGeneratorPage() {
+export default function FiveAdTypesGeneratorPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -27,14 +27,5 @@ export default function MultiStepAdGeneratorPage() {
     return null;
   }
 
-  return <MultiStepAdGenerator />;
+  return <FiveAdTypesGenerator />;
 }
-
-
-
-
-
-
-
-
-

@@ -66,6 +66,35 @@ class AdGenerationService {
       throw error;
     }
   }
+
+  // Generate complete ad campaign with all components
+  async generateCompleteAdCampaign(campaignId, brandData, campaignSettings) {
+    try {
+      const response = await Axios.post(`/ad-generation/generate-complete`, {
+        campaignId,
+        brandData,
+        campaignSettings
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error('Error generating complete ad campaign:', error);
+      throw error;
+    }
+  }
+
+  // Generate five specific ad types
+  async generateFiveAdTypes(campaignId, brandData) {
+    try {
+      const response = await Axios.post(`/ad-generation/generate-five-types`, {
+        campaignId,
+        brandData
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error('Error generating five ad types:', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdGenerationService();

@@ -73,6 +73,40 @@ export const useAdGeneration = () => {
     }
   };
 
+  // Generate complete ad campaign
+  const generateCompleteCampaign = async (campaignId, brandData, campaignSettings) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const data = await adGenerationService.generateCompleteAdCampaign(campaignId, brandData, campaignSettings);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      console.error('Error generating complete campaign:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Generate five specific ad types
+  const generateFiveAdTypes = async (campaignId, brandData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const data = await adGenerationService.generateFiveAdTypes(campaignId, brandData);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      console.error('Error generating five ad types:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load initial data
   useEffect(() => {
     if (user) {
@@ -90,6 +124,8 @@ export const useAdGeneration = () => {
     loadCampaigns,
     loadAdTypes,
     loadTopAds,
-    generateContent
+    generateContent,
+    generateCompleteCampaign,
+    generateFiveAdTypes
   };
 };
