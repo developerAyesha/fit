@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import Axios from "@/Config/Axios";
+import { useFormContext } from "react-hook-form";
 
-const StepOne = ({ data, updateData }) => {
+const StepOne = () => {
   const [uploading, setUploading] = useState(false);
+  const { register, setValue, watch, formState: { errors } } = useFormContext();
+  const businessType = watch("business.business_type");
+
 
   const handleFileUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -24,8 +28,8 @@ const StepOne = ({ data, updateData }) => {
       const imageUrl = res?.data?.image_url;
       if (!imageUrl) throw new Error("No image URL returned");
 
-      // Update local state with S3 URL saved by backend into onboarding.business.logo_url
-      updateData("business", { logo_url: imageUrl });
+      // Update form value with S3 URL
+      setValue("business.logo_url", imageUrl, { shouldDirty: true, shouldValidate: true });
     } catch (error) {
       console.error("Upload error:", error);
       alert(error?.response?.data?.message || "Failed to upload logo");
@@ -35,7 +39,7 @@ const StepOne = ({ data, updateData }) => {
   };
 
   const handleRemoveLogo = () => {
-    updateData("business", { logo_url: "" });
+    setValue("business.logo_url", "", { shouldDirty: true, shouldValidate: true });
     const fileInput = document.getElementById("logo_upload");
     if (fileInput) fileInput.value = "";
   };
@@ -52,13 +56,13 @@ const StepOne = ({ data, updateData }) => {
         </label>
         <input
           id="business_name"
-          value={data.business.business_name}
-          onChange={(e) =>
-            updateData("business", { business_name: e.target.value })
-          }
           placeholder="Enter your business name"
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
+          {...register("business.business_name")}
         />
+        {errors?.business?.business_name && (
+          <p className="text-red-500 text-sm">{errors.business.business_name.message}</p>
+        )}
       </div>
 
       {/* Business Type */}
@@ -71,27 +75,23 @@ const StepOne = ({ data, updateData }) => {
             <div className="relative">
               <input
                 type="radio"
-                name="business_type"
                 value="Online"
-                checked={data.business.business_type === "Online"}
-                onChange={(e) =>
-                  updateData("business", { business_type: e.target.value })
-                }
+                {...register("business.business_type")}
                 style={{
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   MozAppearance: 'none',
                   width: '16px',
                   height: '16px',
-                  border: data.business.business_type === "Online" ? '2px solid #fa2a00' : '2px solid #6b7280',
+                  border: businessType === "Online" ? '2px solid #fa2a00' : '2px solid #6b7280',
                   borderRadius: '50%',
-                  backgroundColor: data.business.business_type === "Online" ? '#fa2a00' : 'transparent',
+                  backgroundColor: businessType === "Online" ? '#fa2a00' : 'transparent',
                   position: 'relative',
                   cursor: 'pointer',
                   outline: 'none'
                 }}
               />
-              {data.business.business_type === "Online" && (
+              {businessType === "Online" && (
                 <div
                   style={{
                     position: 'absolute',
@@ -113,27 +113,23 @@ const StepOne = ({ data, updateData }) => {
             <div className="relative">
               <input
                 type="radio"
-                name="business_type"
                 value="In Person"
-                checked={data.business.business_type === "In Person"}
-                onChange={(e) =>
-                  updateData("business", { business_type: e.target.value })
-                }
+                {...register("business.business_type")}
                 style={{
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   MozAppearance: 'none',
                   width: '16px',
                   height: '16px',
-                  border: data.business.business_type === "In Person" ? '2px solid #fa2a00' : '2px solid #6b7280',
+                  border: businessType === "In Person" ? '2px solid #fa2a00' : '2px solid #6b7280',
                   borderRadius: '50%',
-                  backgroundColor: data.business.business_type === "In Person" ? '#fa2a00' : 'transparent',
+                  backgroundColor: businessType === "In Person" ? '#fa2a00' : 'transparent',
                   position: 'relative',
                   cursor: 'pointer',
                   outline: 'none'
                 }}
               />
-              {data.business.business_type === "In Person" && (
+              {businessType === "In Person" && (
                 <div
                   style={{
                     position: 'absolute',
@@ -155,7 +151,7 @@ const StepOne = ({ data, updateData }) => {
       </div>
 
       {/* Business City */}
-      {data.business.business_type === "In Person" && (
+      {businessType === "In Person" && (
         <div className="space-y-2">
           <label
             htmlFor="business_city"
@@ -165,13 +161,13 @@ const StepOne = ({ data, updateData }) => {
           </label>
           <input
             id="business_city"
-            value={data.business.business_city}
-            onChange={(e) =>
-              updateData("business", { business_city: e.target.value })
-            }
             placeholder="Enter your city"
             className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
+            {...register("business.business_city")}
           />
+          {errors?.business?.business_city && (
+            <p className="text-red-500 text-sm">{errors.business.business_city.message}</p>
+          )}
         </div>
       )}
 
@@ -199,10 +195,10 @@ const StepOne = ({ data, updateData }) => {
             onChange={handleFileUpload}
             className="hidden"
           />
-          {data.business.logo_url && (
+          {watch("business.logo_url") && (
             <div className="flex items-center gap-2">
               <img
-                src={data.business.logo_url}
+                src={watch("business.logo_url")}
                 alt="Uploaded logo"
                 className="w-10 h-10 object-contain border border-gray-600 rounded"
               />
@@ -229,13 +225,13 @@ const StepOne = ({ data, updateData }) => {
         <input
           id="website_url"
           type="url"
-          value={data.business.website_url}
-          onChange={(e) =>
-            updateData("business", { website_url: e.target.value })
-          }
           placeholder="https://your-website.com"
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
+          {...register("business.website_url")}
         />
+        {errors?.business?.website_url && (
+          <p className="text-red-500 text-sm">{errors.business.website_url.message}</p>
+        )}
       </div>
     </div>
   );

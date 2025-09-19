@@ -1,5 +1,7 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Axios from "@/Config/Axios";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/authContext";
@@ -12,6 +14,7 @@ import StepFour from "./StepFour";
 import StepFive from "./StepFive";
 import StepSix from "./StepSix";
 import StepIndicator from "./StepIndicator";
+import { onboardingSchema } from "./schema";
 
 // Initial state aligned with Mongoose schema
 const initialData = {
@@ -85,6 +88,14 @@ const OnboardingWizard = () => {
   const { user } = useAuth();
   const totalSteps = 6;
 
+  // React Hook Form setup
+  const methods = useForm({
+    defaultValues: initialData,
+    resolver: zodResolver(onboardingSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+  });
+
   // Fetch onboarding data + progress
   useEffect(() => {
     const fetchOnboarding = async () => {
@@ -101,7 +112,7 @@ const OnboardingWizard = () => {
           console.log("Fetched Onboarding Data:", res.data.data);
           
           if (res.data.data.data) {
-            setData((prev) => ({
+            const merged = (prev) => ({
               ...prev,
               ...res.data.data.data,
               business: { ...prev.business, ...(res.data.data.data.business || {}) },
@@ -110,7 +121,10 @@ const OnboardingWizard = () => {
               social: { ...prev.social, ...(res.data.data.data.social || {}) },
               brand: { ...prev.brand, ...(res.data.data.data.brand || {}) },
               customer: { ...prev.customer, ...(res.data.data.data.customer || {}) },
-            }));
+            });
+            setData((prev) => merged(prev));
+            // sync RHF values as source of truth for migrated steps
+            methods.reset(merged(initialData));
           }
           if (res.data.data.progress) {
             setProgress(res.data.data.progress);
@@ -197,8 +211,82 @@ const OnboardingWizard = () => {
       };
 
       const stepName = stepMap[currentStep];
-      const stepData = data[stepName];
+      let stepData;
       const userId = user?._id;
+
+      if (currentStep === 1) {
+        // Validate only StepOne fields
+        const valid = await methods.trigger([
+          "business.business_name",
+          "business.business_type",
+          "business.business_city",
+          "business.website_url",
+          "business.logo_url",
+        ]);
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("business");
+      } else if (currentStep === 2) {
+        const valid = await methods.trigger([
+          "visual.brand_colors",
+          "visual.voice_tone_style",
+        ]);
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("visual");
+      } else if (currentStep === 3) {
+        const valid = await methods.trigger([
+          "campaign.campaign_types",
+          "campaign.seasonal_launch_options",
+          "campaign.other_campaign_details",
+        ]);
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("campaign");
+      } else if (currentStep === 4) {
+        const valid = await methods.trigger([
+          "social.instagram_reel_url",
+          "social.meta_account",
+          "social.competitor_urls",
+        ]);
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("social");
+      } else if (currentStep === 5) {
+        const valid = await methods.trigger([
+          "brand.coaching_style",
+          "brand.brand_words",
+          "brand.words_to_avoid",
+        ], { shouldFocus: false });
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("brand");
+      } else if (currentStep === 6) {
+        const valid = await methods.trigger([
+          "customer.target_market",
+          "customer.main_problem",
+          "customer.failed_solutions",
+          "customer.client_words",
+          "customer.magic_wand_result",
+        ]);
+        if (!valid) {
+          setLoading(false);
+          return;
+        }
+        stepData = methods.getValues("customer");
+      } else {
+        stepData = data[stepName];
+      }
 
       await saveStep(stepName, userId, stepData, currentStep);
 
@@ -229,7 +317,7 @@ const OnboardingWizard = () => {
     const stepProps = { data, updateData };
     switch (currentStep) {
       case 1:
-        return <StepOne {...stepProps} />;
+        return <StepOne />;
       case 2:
         return <StepTwo {...stepProps} />;
       case 3:
@@ -241,7 +329,7 @@ const OnboardingWizard = () => {
       case 6:
         return <StepSix {...stepProps} />;
       default:
-        return <StepOne {...stepProps} />;
+        return <StepOne />;
     }
   };
 
@@ -272,16 +360,18 @@ const OnboardingWizard = () => {
               : "opacity-100 translate-x-0"
           }`}
         >
-          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 onboarding-form" style={{ '--tw-ring-color': '#fa2a00' }}>
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {stepTitles[currentStep - 1]}
-              </h2>
-              <p className="text-gray-300">{stepSubtitles[currentStep - 1]}</p>
-            </div>
+          <FormProvider {...methods}>
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 onboarding-form" style={{ '--tw-ring-color': '#fa2a00' }}>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {stepTitles[currentStep - 1]}
+                </h2>
+                <p className="text-gray-300">{stepSubtitles[currentStep - 1]}</p>
+              </div>
 
-            {renderStep()}
-          </div>
+              {renderStep()}
+            </div>
+          </FormProvider>
 
           {/* Navigation */}
           <div className="flex justify-between items-center mt-8">

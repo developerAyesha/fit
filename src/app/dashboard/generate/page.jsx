@@ -101,7 +101,7 @@ function AdGeneratorCard({
   };
 
   return (
-    <div className="border border-red-500/20 rounded-xl p-6 bg-gray-900/50 hover:border-red-500/40 transition-all duration-300">
+    <div className="border border-brand rounded-xl p-6 bg-gray-900/50 hover:border-red-500/40 transition-all duration-300">
       {/* Header */}
         <div className="mb-4 flex items-center gap-3">
           {icon}
@@ -291,13 +291,13 @@ export default function AdGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+    <div className="container mx-auto">
       {/* Page Heading */}
       <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-extrabold text-white mb-3 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl  text-white mb-3 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
                 Ad Generator
               </h1>
               <p className="text-gray-400 text-lg">
@@ -317,7 +317,7 @@ export default function AdGenerator() {
       {!selectedCampaign ? (
         <>
           <div className="mb-12 text-center">
-            <h3 className="text-3xl font-bold mb-4 text-red-500">
+            <h3 className="text-3xl font-bold mb-4 text-brand">
           Most Popular Campaigns
         </h3>
             <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
@@ -365,7 +365,7 @@ export default function AdGenerator() {
           </button>
 
           {/* Selected Campaign Card */}
-          <div className="border border-red-500/30 rounded-xl p-6 bg-gray-900/80 mb-8">
+          <div className="border border-red-500/30 rounded-xl p-6 mb-8">
             <div className="flex items-center gap-3 mb-4">
               <Target className="w-8 h-8 text-red-500" />
               <h2 className="text-2xl font-bold text-white">

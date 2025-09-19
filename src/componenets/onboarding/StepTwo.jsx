@@ -1,7 +1,13 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
 
-const StepTwo = ({ data, updateData }) => {
+const StepTwo = () => {
   const voiceTones = ["Bold", "Playful", "Premium", "Aggressive"];
+  const { register, watch, setValue } = useFormContext();
+  const brandColorsArray = watch("visual.brand_colors") || [];
+  const brandColorsString = Array.isArray(brandColorsArray)
+    ? brandColorsArray.join(", ")
+    : (brandColorsArray || "");
 
   return (
     <div className="space-y-6">
@@ -15,10 +21,14 @@ const StepTwo = ({ data, updateData }) => {
         </label>
         <input
           id="brand_colors"
-          value={data.visual.brand_colors}
-          onChange={(e) =>
-            updateData("visual", { brand_colors: e.target.value })
-          }
+          value={brandColorsString}
+          onChange={(e) => {
+            const parts = e.target.value
+              .split(",")
+              .map((c) => c.trim())
+              .filter(Boolean);
+            setValue("visual.brand_colors", parts, { shouldDirty: true, shouldValidate: true });
+          }}
           placeholder="#FF0000, #00FF00, #0000FF or Red, Green, Blue"
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
@@ -37,10 +47,7 @@ const StepTwo = ({ data, updateData }) => {
         </label>
         <select
           id="voice_tone_style"
-          value={data.visual.voice_tone_style}
-          onChange={(e) =>
-            updateData("visual", { voice_tone_style: e.target.value })
-          }
+          {...register("visual.voice_tone_style")}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         >
           <option value="">Select your brand voice</option>
