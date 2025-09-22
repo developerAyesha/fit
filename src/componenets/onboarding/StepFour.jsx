@@ -1,6 +1,8 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
 
-const StepFour = ({ data, updateData }) => {
+const StepFour = () => {
+  const { register, watch, setValue } = useFormContext();
   return (
     <div className="space-y-6">
       {/* Instagram Reel URL */}
@@ -14,10 +16,7 @@ const StepFour = ({ data, updateData }) => {
         <input
           id="instagram_reel_url"
           type="url"
-          value={data.social.instagram_reel_url}
-          onChange={(e) =>
-            updateData("social", { instagram_reel_url: e.target.value })
-          }
+          {...register("social.instagram_reel_url")}
           placeholder="https://instagram.com/reel/..."
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
@@ -37,10 +36,7 @@ const StepFour = ({ data, updateData }) => {
         <input
           id="meta_account"
           type="text"
-          value={data.social.meta_account}
-          onChange={(e) =>
-            updateData("social", { meta_account: e.target.value })
-          }
+          {...register("social.meta_account")}
           placeholder="@your Instagram/TikTok/Facebook handle"
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
@@ -59,15 +55,14 @@ const StepFour = ({ data, updateData }) => {
         </label>
         <textarea
           id="competitor_urls"
-          value={data.social.competitor_urls.join(", ")}
-          onChange={(e) =>
-            updateData("social", {
-              competitor_urls: e.target.value
-                .split(",")
-                .map((url) => url.trim())
-                .filter(Boolean),
-            })
-          }
+          value={(watch("social.competitor_urls") || []).join(", ")}
+          onChange={(e) => {
+            const list = e.target.value
+              .split(",")
+              .map((url) => url.trim())
+              .filter(Boolean);
+            setValue("social.competitor_urls", list, { shouldDirty: true, shouldValidate: true });
+          }}
           placeholder="https://competitor1.com, https://competitor2.com"
           rows={3}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"

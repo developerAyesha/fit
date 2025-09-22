@@ -1,6 +1,11 @@
 "use client";
 
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+
 export default function ChatGPTDriveSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const badgePhrases = [
     "This isn't just another program",
     "We're not like the other guys",
@@ -43,7 +48,8 @@ export default function ChatGPTDriveSection() {
   ];
 
   return (
-    <section
+    <motion.section
+      ref={ref}
       className="py-16 px-4 relative overflow-hidden"
       style={{
         backgroundImage: `url('/lovable-uploads/5ab46530-2ea7-444d-b47c-765e37a84154.png')`,
@@ -61,24 +67,42 @@ export default function ChatGPTDriveSection() {
         <div className="flex flex-col lg:flex-row gap-8 mb-8 relative">
           {/* Left Content */}
           <div className="lg:w-3/5 relative">
-            <h2 className="text-2xl md:text-4xl font-black text-white mb-6 font-klein">
+            <motion.h2 
+              className="text-2xl md:text-4xl font-black text-white mb-6 font-klein"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <span className="block">Recognise Any of This</span>
               <span className="block">ChatGPT Drive?</span>
-            </h2>
-            <p className="text-lg text-white/90 leading-relaxed mb-8">
+            </motion.h2>
+            <motion.p 
+              className="text-lg text-white/90 leading-relaxed mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               What's the secret sauce? How can I give ChatGPT a wedgie so bad his cousin Claude feels it? PLUS,
               make better ads that beat 99% of copywriters? It's in my proprietary private data set. Lemme explain…
-            </p>
+            </motion.p>
 
             {/* Left Badges */}
-            <div className="flex flex-col gap-3 items-start max-w-md relative">
+            <motion.div 
+              className="flex flex-col gap-3 items-start max-w-md relative"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
               {badgePhrases.map((phrase, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="bg-gray-700/30 backdrop-blur-sm border border-gray-600/30 rounded-lg px-4 py-2 text-sm hover:bg-gray-600/40 transition-all duration-200 hover:scale-105 text-white"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
                 >
                   {phrase}
-                </div>
+                </motion.div>
               ))}
 
               {/* Left Floating Emojis */}
@@ -96,19 +120,27 @@ export default function ChatGPTDriveSection() {
                   }}
                 />
               ))}
-            </div>
+            </motion.div>
           </div>
 
           {/* Right Badges */}
-          <div className="lg:absolute lg:right-0 lg:top-0 lg:w-80 lg:pt-16 relative">
+          <motion.div 
+            className="lg:absolute lg:right-0 lg:top-0 lg:w-80 lg:pt-16 relative"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+          >
             <div className="flex flex-col gap-3 items-start">
               {rightBadgePhrases.map((phrase, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="bg-gray-700/30 backdrop-blur-sm border border-gray-600/30 rounded-lg px-4 py-2 text-sm hover:bg-gray-600/40 transition-all duration-200 hover:scale-105 text-white"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                  transition={{ duration: 0.4, delay: 1.2 + index * 0.08 }}
                 >
                   {phrase}
-                </div>
+                </motion.div>
               ))}
             </div>
 
@@ -127,11 +159,16 @@ export default function ChatGPTDriveSection() {
                 }}
               />
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom Paragraph */}
-        <div className="flex justify-start pl-[50%] -mt-16">
+        <motion.div 
+          className="flex justify-start pl-[50%] -mt-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: 1.8 }}
+        >
           <div className="w-full max-w-2xl">
             <p className="font-inter text-left text-lg leading-relaxed text-white">
               AI is only as good as the data sets you give it. And my Daddy (Sabri Suby) runs a digital marketing agency
@@ -140,8 +177,8 @@ export default function ChatGPTDriveSection() {
               spend.
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

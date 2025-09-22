@@ -6,7 +6,7 @@ import { useAuth } from "@/context/authContext";
 // import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { Zap, Library, Settings, Target } from "lucide-react";
 import Button from "@/utils/Button";
-import FacebookConnect from "@/componenets/FacebookConnect";
+import FacebookConnect from "@/componenets/home/FacebookConnect";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -77,10 +77,25 @@ export default function Dashboard() {
       value: 3,
       icon: Target,
     },
+    {
+      label: "Ads Generated (7d)",
+      value: 1,
+      icon: Zap,
+    },
+    {
+      label: "Draft Campaigns",
+      value: 2,
+      icon: Settings,
+    },
+    {
+      label: "Library Items",
+      value: 12,
+      icon: Library,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white px-4 py-8">
+    <div className="min-h-screen text-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-10">
@@ -95,40 +110,57 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-gray-900 p-6 rounded-lg shadow hover:shadow-lg transition"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">
-                  {stat.label}
-                </span>
-                <stat.icon className="h-5 w-5 text-gray-400" />
-              </div>
-              <div className="text-3xl font-bold">{stat.value}</div>
+        {/* Ad Generation + Facebook Integration side-by-side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 items-stretch">
+          {/* Ad Generation (left) */}
+          <div className="bg-bg-dark/60 rounded-lg border border-brand-dark/10 h-full flex flex-col">
+            <div className="p-5 border-b border-white/5">
+              <h2 className="text-xl font-semibold">Ad Generation</h2>
+              <p className="text-gray-400 text-sm">Your generation stats at a glance</p>
             </div>
-          ))}
-        </div>
+            <div className="p-5 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
+                {stats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="bg-bg-dark p-6 rounded-lg shadow hover:shadow-lg transition"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-300">
+                        {stat.label}
+                      </span>
+                      <stat.icon className="h-5 w-5 text-brand" />
+                    </div>
+                    <div className="text-3xl font-bold">{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-        {/* Facebook Integration */}
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-4">Integrations</h2>
-          <div className="max-w-md">
-            <FacebookConnect />
+          {/* Facebook Integration (right) */}
+          <div className="bg-bg-dark/60 rounded-lg border border-brand-dark/10 h-full flex flex-col">
+            <div className="p-5 border-b border-white/5">
+              <h2 className="text-xl font-semibold">Facebook Integration</h2>
+              <p className="text-gray-400 text-sm">Connect and manage your Facebook account</p>
+            </div>
+            <div className="p-5 flex-1">
+              <div className="max-w-md">
+                <FacebookConnect />
+              </div>
+            </div>
           </div>
         </div>
+
 
         {/* Quick Actions */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {quickActions.map((action) => (
               <div
                 key={action.title}
-                className="bg-gray-900 p-6 rounded-lg hover:shadow-lg transition cursor-pointer flex flex-col justify-between"
+                className="bg-bg-dark p-4 rounded-lg hover:shadow-lg border border-brand-dark/30 hover:border hover:border-brand transition cursor-pointer flex flex-col justify-between"
               >
                 <div>
                   <div

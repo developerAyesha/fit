@@ -1,8 +1,9 @@
 import React from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 
-const StepSix = ({ data, updateData }) => {
-  // Safely access customer object
-  const customer = data?.customer || {};
+const StepSix = () => {
+  const { register, control, formState: { errors } } = useFormContext();
+  const customer = useWatch({ control, name: "customer" }) || {};
 
   const targetMarkets = [
     "General Population (Fat Loss & Fitness)",
@@ -46,8 +47,7 @@ const StepSix = ({ data, updateData }) => {
         </label>
         <select
           id="target_market"
-          value={customer.target_market || ""}
-          onChange={(e) => updateData("customer", { target_market: e.target.value })}
+          {...register("customer.target_market")}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         >
           <option value="">Select your target market</option>
@@ -62,8 +62,7 @@ const StepSix = ({ data, updateData }) => {
           <input
             type="text"
             placeholder="Specify your target market"
-            value={customer.target_market === "Other" ? "" : customer.target_market}
-            onChange={(e) => updateData("customer", { target_market: e.target.value })}
+            {...register("customer.target_market")}
             className="mt-2 w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
           />
         )}
@@ -79,12 +78,14 @@ const StepSix = ({ data, updateData }) => {
         </label>
         <textarea
           id="main_problem"
-          value={customer.main_problem || ""}
-          onChange={(e) => updateData("customer", { main_problem: e.target.value })}
+          {...register("customer.main_problem")}
           placeholder="Busy professionals who want to lose weight but don't have time for 2-hour gym sessions..."
           rows={3}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
+        {errors?.customer?.main_problem && (
+          <p className="text-red-500 text-sm">{errors.customer.main_problem.message}</p>
+        )}
       </div>
 
       {/* Failed Solutions */}
@@ -97,12 +98,14 @@ const StepSix = ({ data, updateData }) => {
         </label>
         <textarea
           id="failed_solutions"
-          value={customer.failed_solutions || ""}
-          onChange={(e) => updateData("customer", { failed_solutions: e.target.value })}
+          {...register("customer.failed_solutions")}
           placeholder="Extreme diets, expensive gym memberships they never used, complicated workout plans..."
           rows={3}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
+        {errors?.customer?.failed_solutions && (
+          <p className="text-red-500 text-sm">{errors.customer.failed_solutions.message}</p>
+        )}
       </div>
 
       {/* Client Words */}
@@ -115,12 +118,14 @@ const StepSix = ({ data, updateData }) => {
         </label>
         <textarea
           id="client_words"
-          value={customer.client_words || ""}
-          onChange={(e) => updateData("customer", { client_words: e.target.value })}
+          {...register("customer.client_words")}
           placeholder="I need something that fits my schedule, I'm tired of starting over, I want to feel confident again..."
           rows={3}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
+        {errors?.customer?.client_words && (
+          <p className="text-red-500 text-sm">{errors.customer.client_words.message}</p>
+        )}
       </div>
 
       {/* Magic Wand Result */}
@@ -133,12 +138,14 @@ const StepSix = ({ data, updateData }) => {
         </label>
         <textarea
           id="magic_wand_result"
-          value={customer.magic_wand_result || ""}
-          onChange={(e) => updateData("customer", { magic_wand_result: e.target.value })}
+          {...register("customer.magic_wand_result")}
           placeholder="Wake up feeling energized, fit into their favorite clothes, feel confident at the beach..."
           rows={3}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
+        {errors?.customer?.magic_wand_result && (
+          <p className="text-red-500 text-sm">{errors.customer.magic_wand_result.message}</p>
+        )}
       </div>
     </div>
   );

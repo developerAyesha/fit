@@ -12,7 +12,6 @@ const PricingCard = ({
   buttonStyle,
   className = "",
   onSelectPlan,
-  
 }) => {
   // Format price based on currency
   const formatPrice = (price, currency) => {
@@ -81,13 +80,13 @@ const PricingCard = ({
         >
           {plan.name}
         </h3>
-         <div
-           className={`text-4xl font-black mb-2 ${
-             highlight ? "text-[#FE0010]" : "text-white"
-           }`}
-         >
-           {formatPrice(plan.price, plan.currency)}
-         </div>
+        <div
+          className={`text-4xl font-black mb-2 ${
+            highlight ? "text-[#FE0010]" : "text-white"
+          }`}
+        >
+          {formatPrice(plan.price, plan.currency)}
+        </div>
         <p
           className={`text-sm ${
             highlight ? "text-[#FE0010]/80" : "text-gray-400"

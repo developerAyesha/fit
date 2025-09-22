@@ -1,6 +1,8 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
 
-const StepFive = ({ data, updateData }) => {
+const StepFive = () => {
+  const { register } = useFormContext();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -21,10 +23,7 @@ const StepFive = ({ data, updateData }) => {
         <input
           id="coaching_style"
           type="text"
-          value={data.brand.coaching_style || ""}
-          onChange={(e) =>
-            updateData("brand", { coaching_style: e.target.value })
-          }
+          {...register("brand.coaching_style")}
           placeholder="Motivational supportive results-driven"
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
         />
@@ -43,10 +42,7 @@ const StepFive = ({ data, updateData }) => {
         </label>
         <textarea
           id="brand_words"
-          value={data.brand.brand_words || ""}
-          onChange={(e) =>
-            updateData("brand", { brand_words: e.target.value })
-          }
+          {...register("brand.brand_words")}
           placeholder="Transform your body, beast mode, unleash your potential..."
           rows={4}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"
@@ -66,10 +62,7 @@ const StepFive = ({ data, updateData }) => {
         </label>
         <textarea
           id="words_to_avoid"
-          value={data.brand.words_to_avoid || ""}
-          onChange={(e) =>
-            updateData("brand", { words_to_avoid: e.target.value })
-          }
+          {...register("brand.words_to_avoid")}
           placeholder="Diet, skinny, quick fix, magic pill..."
           rows={4}
           className="w-full rounded-md border border-gray-600 bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#fa2a00]"

@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error } = await authService.getProfile();
       if (error) {
+        console.log(error)
         setUser(null);
       } else {
         setUser(data.data.user);

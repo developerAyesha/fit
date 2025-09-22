@@ -74,7 +74,7 @@ export default function Account() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-bg-dark text-white flex items-center justify-center">
         <div className="flex items-center gap-3">
           <Loader2 className="w-6 h-6 animate-spin" />
           <p className="text-lg">Loading your account...</p>
@@ -90,8 +90,8 @@ export default function Account() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen text-white">
+      <div className="container mx-auto">
         <h1 className="text-4xl font-bold mb-2">Account Settings</h1>
         <p className="text-lg text-gray-400 mb-10">
           Manage your profile and account preferences
@@ -112,7 +112,7 @@ export default function Account() {
 
           {/* Subscription */}
           <Section title="Subscription" icon={<CreditCard className="w-6 h-6 text-red-500" />}>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-800">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-background">
               <div>
                 <p className="font-semibold text-lg">{user.plan} Plan</p>
                 <p className="text-gray-400">Limited ad generations per month</p>
@@ -132,7 +132,7 @@ export default function Account() {
           {/* Account Actions */}
           <Section title="Account Actions">
             {/* Sign out */}
-            <div className="flex justify-between items-center p-4 rounded-lg bg-gray-800 mb-6">
+            <div className="flex justify-between items-center p-4 rounded-lg bg-background mb-6">
               <div>
                 <p className="font-semibold text-lg">Sign Out</p>
                 <p className="text-gray-400">Sign out of your account on this device</p>
@@ -140,7 +140,7 @@ export default function Account() {
               <button
                 onClick={handleSignOut}
                 disabled={isLoggingOut}
-                className="flex items-center gap-2 px-6 py-2 border rounded-lg hover:bg-red-600 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex text-brand hover:text-white items-center gap-2 px-6 py-2 border border-brand/50 rounded-lg hover:bg-brand-dark hover:border-brand-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoggingOut ? (
                   <>
@@ -157,7 +157,7 @@ export default function Account() {
             </div>
 
             {/* Change password */}
-            <div className="p-4 rounded-lg bg-gray-800">
+            <div className="p-4 rounded-lg bg-bg-dark">
               <div className="mb-4">
                 <p className="font-semibold text-lg flex items-center gap-2">
                   <Lock className="w-5 h-5 text-red-500" />
@@ -193,7 +193,7 @@ export default function Account() {
                   <button
                     type="submit"
                     disabled={isChangingPassword}
-                    className="px-6 py-2 border rounded-lg hover:bg-red-600 hover:border-red-600"
+                    className="px-6 py-2 border border-brand text-brand hover:text-white rounded-lg hover:bg-brand hover:border-brand-dark"
                   >
                     {isChangingPassword ? "Updating..." : "Update Password"}
                   </button>
@@ -211,7 +211,7 @@ export default function Account() {
 
 function Section({ title, icon, children }) {
   return (
-    <div className="border border-gray-700 rounded-lg bg-gray-900 p-6">
+    <div className="border border-brand/20  rounded-lg bg-bg-dark p-6">
       <div className="flex items-center gap-3 mb-4">
         {icon}
         <h2 className="text-2xl font-bold">{title}</h2>
@@ -241,7 +241,7 @@ function Field({ label, type = "text", value, onChange }) {
         type={type}
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+        className="w-full px-3 py-2 bg-background rounded-lg border border-brand/20 focus:outline-none focus:ring-2 focus:ring-brand"
       />
     </div>
   );

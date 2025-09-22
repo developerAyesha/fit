@@ -79,7 +79,7 @@ const FacebookConnect = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+      <div className="bg-bg-dark p-6 rounded-lg border border-brand/20">
         <div className="flex items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
           <span className="ml-2 text-gray-300">Checking Facebook connection...</span>
@@ -89,7 +89,7 @@ const FacebookConnect = () => {
   }
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+    <div className="bg-bg-dark p-6 rounded-lg border border-gray-700">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center flex-1">
           <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
@@ -110,9 +110,9 @@ const FacebookConnect = () => {
               <span className="text-sm font-medium">Connected</span>
             </div>
           ) : (
-            <div className="flex items-center text-gray-400">
+            <div className="flex items-center text-brand">
               <AlertCircle className="h-5 w-5 mr-2" />
-              <span className="text-sm font-medium">Not Connected</span>
+              <span className="text-sm font-medium ">Not Connected</span>
             </div>
           )}
         </div>

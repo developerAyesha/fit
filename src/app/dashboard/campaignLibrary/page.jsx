@@ -37,11 +37,11 @@ export default function CampaignLibrary() {
   const handleDelete = (c) => alert("Deleting " + c.name);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen text-white">
+      <div className="container mx-auto ">
         {/* Heading */}
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold mb-2">Campaign Library</h1>
+          <h1 className="text-3xl font-bold mb-2">Campaign Library</h1>
           <p className="text-gray-400">
             View and manage all your generated ad campaigns
           </p>
@@ -55,13 +55,14 @@ export default function CampaignLibrary() {
               placeholder="Search campaigns..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 px-4 py-2 text-white placeholder-gray-500 focus:border-red-500 focus:outline-none"
+              className={`w-full max-w-md rounded-lg border border-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-red-500 
+              focus:outline-none ${search.length > 0 ? 'bg-bg-dark text-black' : 'bg-transparent '}`}
             />
           </div>
         )}
 
-       <div className="container mx-auto px-4 py-8 space-y-6">
-      {dummyCampaigns.map((campaign) => (
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-8">
+      {filteredCampaigns.map((campaign) => (
         <CampaignCard
           key={campaign.id}
           campaign={campaign}
