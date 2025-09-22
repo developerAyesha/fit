@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Calendar, LogOut, CreditCard, Lock, Loader2 } from "lucide-react";
+import { User, Mail, Calendar, LogOut, CreditCard, Lock, Loader2, Crown, ExternalLink } from "lucide-react";
 import { useAuth } from "@/context/authContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import PricingModal from "@/componenets/PricingModal";
 
 export default function Account() {
   const { user, logout, changePassword, loading } = useAuth();
+  const { subscription, loading: subscriptionLoading, refetch: refetchSubscription } = useSubscription();
   const router = useRouter();
-
+   console.log("subscription", subscription);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const [form, setForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -37,6 +41,12 @@ export default function Account() {
       // Still redirect even if logout fails
       router.push("/");
     }
+  };
+
+  const handlePricingModalClose = () => {
+    setShowPricingModal(false);
+    // Refetch subscription data in case it was updated
+    refetchSubscription();
   };
 
   const handlePasswordChange = async (e) => {
@@ -112,21 +122,132 @@ export default function Account() {
 
           {/* Subscription */}
           <Section title="Subscription" icon={<CreditCard className="w-6 h-6 text-red-500" />}>
-            <div className="flex items-center justify-between p-4 rounded-lg bg-background">
-              <div>
-                <p className="font-semibold text-lg">{user.plan} Plan</p>
-                <p className="text-gray-400">Limited ad generations per month</p>
+            {subscriptionLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-red-500" />
+                <span className="ml-3 text-white">Loading subscription...</span>
               </div>
-              <span className="px-4 py-2 border rounded-lg text-gray-300">{user.plan}</span>
-            </div>
-            <div className="mt-6">
+            ) : subscription ? (
+              <div className="space-y-4">
+                {/* Current Plan Info */}
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-800">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-red-500/20">
+                      <Crown className="w-6 h-6 text-red-500" />
+                    </div>
+              <div>
+                      <p className="font-semibold text-lg text-white">
+                        {subscription.plan?.name || 'Unknown Plan'}
+                      </p>
+                      <p className="text-gray-400">
+                        {subscription.status === 'active' ? 'Active' : 
+                         subscription.status === 'trial' ? 'Trial' :
+                         subscription.status === 'lifetime' ? 'Lifetime' : 'Inactive'}
+                        {subscription.current_period_end && 
+                          ` • Renews ${new Date(subscription.current_period_end).toLocaleDateString()}`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      subscription.status === 'active' ? 'bg-green-600 text-white' :
+                      subscription.status === 'trial' ? 'bg-yellow-600 text-white' :
+                      subscription.status === 'lifetime' ? 'bg-purple-600 text-white' :
+                      'bg-gray-600 text-white'
+                    }`}>
+                      {subscription.status?.toUpperCase() || 'UNKNOWN'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Plan Features */}
+                {subscription.plan?.features && (
+                  <div className="p-4 rounded-lg bg-gray-800">
+                    <h4 className="font-semibold text-white mb-3">Plan Features:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {subscription.plan.features.map((feature, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Usage Stats */}
+                {subscription.usage && (
+                  <div className="p-4 rounded-lg bg-gray-800">
+                    <h4 className="font-semibold text-white mb-3">Usage This Month:</h4>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Ads Generated:</span>
+                      <span className="text-white font-semibold">
+                        {subscription.usage.ads_generated || 0}
+                        {subscription.plan?.limits?.ads_per_month && 
+                          ` / ${subscription.plan.limits.ads_per_month}`}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPricingModal(true)}
+                    className="flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    <Crown className="w-4 h-4" />
+                    Upgrade Plan
+                  </button>
+                  
+                  <button
+                    onClick={async () => {
+                      try {
+                        // Call the portal endpoint to get the portal URL
+                        const response = await fetch('/api/v1/subscriptions/portal', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                          }
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success && result.data?.portal_url) {
+                          window.open(result.data.portal_url, '_blank');
+                        } else {
+                          alert('Unable to access billing portal');
+                        }
+                      } catch (error) {
+                        console.error('Error opening billing portal:', error);
+                        alert('Unable to access billing portal');
+                      }
+                    }}
+                    className="flex items-center gap-2 px-6 py-2 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white rounded-lg transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Manage Billing
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="p-4 rounded-lg bg-gray-800">
+                  <Crown className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-white mb-2">No Active Subscription</h3>
+                  <p className="text-gray-400 mb-4">
+                    Choose a plan to start generating high-converting ads
+                  </p>
               <button
-                disabled
-                className="px-6 py-2 border rounded-lg text-gray-400 cursor-not-allowed"
+                    onClick={() => setShowPricingModal(true)}
+                    className="flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors mx-auto"
               >
-                Upgrade Plan (Coming Soon)
+                    <Crown className="w-4 h-4" />
+                    Choose Plan
               </button>
             </div>
+              </div>
+            )}
           </Section>
 
           {/* Account Actions */}
@@ -203,6 +324,16 @@ export default function Account() {
           </Section>
         </div>
       </div>
+
+      {/* Pricing Modal */}
+      <PricingModal
+        isOpen={showPricingModal}
+        onClose={handlePricingModalClose}
+        onPlanSelect={(plan) => {
+          console.log('Selected plan:', plan);
+          setShowPricingModal(false);
+        }}
+      />
     </div>
   );
 }

@@ -26,20 +26,8 @@ export default function Dashboard() {
   if (!user) return null;
 
   const quickActions = [
-    {
-      title: "Complete Ad Generator",
-      description: "Generate complete campaigns with AI in 3 steps",
-      icon: Zap,
-      path: "/dashboard/generate-complete",
-      color: "bg-red-500",
-    },
-    {
-      title: "Five Ad Types Generator",
-      description: "Generate 5 specific ad types with static brand data",
-      icon: Target,
-      path: "/dashboard/generate-five-types",
-      color: "bg-blue-500",
-    },
+   
+   
     {
       title: "Generate New Ad",
       description: "Create a new high-converting fitness ad",
@@ -47,13 +35,7 @@ export default function Dashboard() {
       path: "/dashboard/generate",
       color: "bg-indigo-500",
     },
-    {
-      title: "Multi-Step Generator",
-      description: "Step-by-step Facebook ad creation",
-      icon: Target,
-      path: "/dashboard/generate-multistep",
-      color: "bg-orange-500",
-    },
+   
     {
       title: "View Library",
       description: "Browse your past ad campaigns",

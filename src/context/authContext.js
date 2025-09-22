@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "@/services/authService";
+import TokenManager from "@/utils/tokenManager.js";
 
 const AuthContext = createContext();
 
@@ -11,16 +12,27 @@ export const AuthProvider = ({ children }) => {
   // Fetch logged-in user
   const fetchUser = async () => {
     try {
+      // Check if we have a token before making the request
+      if (!TokenManager.hasAccessToken()) {
+        console.log("No access token found, skipping user fetch");
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await authService.getProfile();
       if (error) {
-        console.log(error)
+        console.error("Error fetching user profile:", error);
         setUser(null);
+        // Clear token if profile fetch fails (token might be invalid)
+        TokenManager.removeAccessToken();
       } else {
         setUser(data.data.user);
       }
     } catch (err) {
       console.error("Error fetching user:", err);
       setUser(null);
+      TokenManager.removeAccessToken();
     } finally {
       setLoading(false);
     }
@@ -49,15 +61,26 @@ export const AuthProvider = ({ children }) => {
   // Login
   const signIn = async (email, password) => {
     try {
+      console.log("🔐 [AuthContext] Starting login process...");
       const { data, error } = await authService.login(email, password);
+      
       if (error) {
+        console.error("❌ [AuthContext] Login failed:", error);
         return { error };
       }
+      
+      console.log("✅ [AuthContext] Login successful, data received:", {
+        hasData: !!data,
+        hasAccessToken: !!data?.data?.accessToken,
+        userEmail: data?.data?.user?.email
+      });
+      
       // After successful login, fetch user profile
+      console.log("🔐 [AuthContext] Fetching user profile...");
       await fetchUser();
       return { data, error: null };
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("❌ [AuthContext] Login error:", err);
       return { error: { message: "Login failed" } };
     }
   };
@@ -116,10 +139,12 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
       setUser(null);
+      TokenManager.clearAuth(); // Clear all auth data
       return { success: true };
     } catch (err) {
       console.error("Logout failed", err);
       setUser(null); // Still clear user even if API call fails
+      TokenManager.clearAuth(); // Clear auth data even if API call fails
       throw err; // Re-throw to let the component handle the error
     }
   };

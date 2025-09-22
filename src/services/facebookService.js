@@ -49,6 +49,27 @@ export const facebookService = {
     }
   },
 
+  // Get account currency information
+  getAccountInfo: async (adAccountId) => {
+    try {
+      console.log("🔍 [Frontend] Calling getAccountInfo for adAccountId:", adAccountId);
+      const response = await Axios.get(`/facebook/account/${adAccountId}/info`);
+      console.log("✅ [Frontend] getAccountInfo response:", response.data);
+      return { data: response.data, error: null };
+    } catch (error) {
+      console.error("❌ [Frontend] getAccountInfo error:", error);
+      console.error("❌ [Frontend] Error response:", error.response?.data);
+      console.error("❌ [Frontend] Error status:", error.response?.status);
+      return { 
+        data: null, 
+        error: {
+          message: error.response?.data?.message || "Failed to get account information",
+          status: error.response?.status || 500
+        }
+      };
+    }
+  },
+
   // Select Facebook account
   selectAccount: async (adAccountId, pageId) => {
     try {
@@ -103,14 +124,34 @@ export const facebookService = {
   // Create Facebook Ad
   createAd: async (payload) => {
     try {
+      console.log("🚀 Sending ad creation request to:", "/facebook/create-ad");
+      console.log("📦 Payload:", JSON.stringify(payload, null, 2));
+      
       const response = await Axios.post("/facebook/create-ad", payload);
+      console.log("✅ Ad creation response:", response.data);
       return { data: response.data, error: null };
     } catch (error) {
+      console.error("❌ Ad creation error:", error);
+      console.error("❌ Error response:", error.response?.data);
+      console.error("❌ Error status:", error.response?.status);
+      console.error("❌ Error headers:", error.response?.headers);
+      
+      // Extract currency-specific error information
+      const errorData = error.response?.data?.error || {};
+      let errorMessage = errorData.message || "Failed to create Facebook ad";
+      
+      // Handle budget-related errors with currency information
+      if (errorData.error_subcode === 1885272 && errorData.error_user_msg) {
+        errorMessage = `Budget Error: ${errorData.error_user_msg}. Please increase your daily budget to meet the minimum requirement for your account's currency.`;
+      }
+      
       return {
         data: null,
         error: {
-          message: error.response?.data?.message || "Failed to create Facebook ad",
-          status: error.response?.status || 500
+          message: errorMessage,
+          status: error.response?.status || 500,
+          details: error.response?.data || error.message,
+          currency_info: errorData.error_user_msg || null
         }
       };
     }

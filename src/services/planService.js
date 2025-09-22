@@ -4,7 +4,7 @@ export const planService = {
   // Get all active plans
   getPlans: async () => {
     try {
-      const response = await Axios.get("/plans/list?active=true");
+      const response = await Axios.get("/plans");
       // Extract the data array from the API response
       return { data: response.data.data, error: null };
     } catch (error) {
