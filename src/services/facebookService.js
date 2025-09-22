@@ -98,7 +98,26 @@ export const facebookService = {
       };
     }
   }
+  ,
+
+  // Create Facebook Ad
+  createAd: async (payload) => {
+    try {
+      const response = await Axios.post("/facebook/create-ad", payload);
+      return { data: response.data, error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: {
+          message: error.response?.data?.message || "Failed to create Facebook ad",
+          status: error.response?.status || 500
+        }
+      };
+    }
+  }
 };
+
+
 
 
 
