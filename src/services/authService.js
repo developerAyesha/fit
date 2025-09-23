@@ -1,4 +1,5 @@
 import Axios from "@/Config/Axios";
+import TokenManager from "@/utils/tokenManager";
 
 export const authService = {
   // Register a new user
@@ -163,6 +164,32 @@ export const authService = {
         data: null, 
         error: {
           message: error.response?.data?.message || "Failed to resend verification email",
+          status: error.response?.status || 500
+        }
+      };
+    }
+  },
+
+  // Google OAuth callback verification
+  verifyGoogleToken: async (accessToken) => {
+    try {
+      // Set the token temporarily for this request
+      const originalToken = TokenManager.getAccessToken();
+      TokenManager.setAccessToken(accessToken);
+      
+      const response = await Axios.get("/auth/profile");
+      
+      // Restore original token if it existed
+      if (originalToken) {
+        TokenManager.setAccessToken(originalToken);
+      }
+      
+      return { data: response.data, error: null };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: {
+          message: error.response?.data?.message || "Google OAuth verification failed",
           status: error.response?.status || 500
         }
       };

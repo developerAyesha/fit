@@ -25,7 +25,6 @@ export default function DashboardLayout({ children }) {
   const navigationItems = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Ad Generator", path: "/dashboard/generate", icon: Zap },
-    { name: "Campaign Library", path: "/dashboard/campaignLibrary", icon: Library },
     { name: "Brand Setup", path: "/dashboard/brand-setup", icon: Settings },
     { name: "Account", path: "/dashboard/account", icon: User },
   ];

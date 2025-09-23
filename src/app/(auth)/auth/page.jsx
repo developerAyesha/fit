@@ -44,7 +44,11 @@ const Auth = () => {
 
 const handleGoogleSignIn = () => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api/v1";
-  window.location.href = `${baseUrl}/auth/google`;
+  const redirectUrl = `${window.location.origin}/onboarding`;
+  const googleAuthUrl = `${baseUrl}/auth/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+  
+  
+  window.location.href = googleAuthUrl;
 };
 
   const handleSubmit = async (e) => {

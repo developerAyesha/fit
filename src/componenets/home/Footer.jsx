@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import Link from "next/link";
 
 export default function Footer() {
   const ref = useRef(null);
@@ -21,6 +22,28 @@ export default function Footer() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
+          {/* Links */}
+          <motion.div 
+            className="flex flex-wrap justify-center gap-6 mb-6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Link 
+              href="/terms" 
+              className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              Terms & Conditions
+            </Link>
+            <Link 
+              href="/privacy" 
+              className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              Privacy Policy
+            </Link>
+          </motion.div>
+
+          {/* Copyright */}
           <motion.p 
             className="text-sm text-gray-400"
             initial={{ opacity: 0 }}
