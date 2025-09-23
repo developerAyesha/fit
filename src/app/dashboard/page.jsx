@@ -35,14 +35,6 @@ export default function Dashboard() {
       path: "/dashboard/generate",
       color: "bg-indigo-500",
     },
-   
-    {
-      title: "View Library",
-      description: "Browse your past ad campaigns",
-      icon: Library,
-      path: "/library",
-      color: "bg-green-500",
-    },
     {
       title: "Brand Setup",
       description: "Update your brand settings",

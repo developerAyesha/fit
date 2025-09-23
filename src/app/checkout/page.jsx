@@ -8,19 +8,9 @@ import { Check, ArrowLeft, CreditCard, Shield, Clock } from "lucide-react";
 import Button from "@/utils/Button";
 import ClientSuspense from "@/components/ClientSuspense";
 
-function CheckoutParamsReader({ onPlanId }) {
-	const searchParams = useSearchParams();
-
-	useEffect(() => {
-		const planId = searchParams.get("plan");
-		onPlanId(planId || "");
-	}, [searchParams, onPlanId]);
-
-	return null;
-}
-
-export default function CheckoutPage() {
+function CheckoutPageContent() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const { user, loading: authLoading } = useAuth();
 	const [selectedPlan, setSelectedPlan] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -35,6 +25,12 @@ export default function CheckoutPage() {
 		}
 	}, [authLoading, user, router]);
 
+	// Get plan ID from URL parameters
+	useEffect(() => {
+		const planId = searchParams.get("plan");
+		setPlanIdFromUrl(planId || "");
+	}, [searchParams]);
+
 	useEffect(() => {
 		if (!planIdFromUrl) {
 			setError("No plan selected");
@@ -47,6 +43,7 @@ export default function CheckoutPage() {
 	const fetchPlan = async (planId) => {
 		try {
 			setLoading(true);
+			setError("");
 			const { data, error } = await planService.getPlanById(planId);
 			
 			if (error) {
@@ -165,9 +162,6 @@ export default function CheckoutPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
-			<ClientSuspense>
-				<CheckoutParamsReader onPlanId={setPlanIdFromUrl} />
-			</ClientSuspense>
 			<div className="max-w-4xl mx-auto px-4 py-8">
 				{/* Header */}
 				<div className="mb-8">
@@ -246,16 +240,16 @@ export default function CheckoutPage() {
 							variant="primary"
 							onClick={handleCheckout}
 							disabled={checkoutLoading}
-							className="w-full py-3 text-lg font-semibold"
+							className="w-full py-3 text-lg font-semibold flex items-center justify-center gap-2"
 						>
 							{checkoutLoading ? (
 								<>
-									<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+									<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
 									Processing...
 								</>
 							) : (
 								<>
-									<CreditCard className="h-4 w-4 mr-2" />
+									<CreditCard className="h-4 w-4" />
 									Pay {formatPrice(selectedPlan.price, selectedPlan.currency)}
 								</>
 							)}
@@ -270,6 +264,14 @@ export default function CheckoutPage() {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+export default function CheckoutPage() {
+	return (
+		<ClientSuspense>
+			<CheckoutPageContent />
+		</ClientSuspense>
 	);
 }
 

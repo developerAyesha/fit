@@ -11,7 +11,6 @@ export default function Account() {
   const { user, logout, changePassword, loading } = useAuth();
   const { subscription, loading: subscriptionLoading, refetch: refetchSubscription } = useSubscription();
   const router = useRouter();
-   console.log("subscription", subscription);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
@@ -71,7 +70,7 @@ export default function Account() {
       if (error) {
         setError(error.message);
       } else {
-        setMessage("✅ Password updated successfully");
+        setMessage(" Password updated successfully");
         setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
       }
     } catch (err) {
@@ -84,7 +83,7 @@ export default function Account() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-dark text-white flex items-center justify-center">
+      <div className="min-h-screen bg-bg-light text-white flex items-center justify-center">
         <div className="flex items-center gap-3">
           <Loader2 className="w-6 h-6 animate-spin" />
           <p className="text-lg">Loading your account...</p>
@@ -130,7 +129,7 @@ export default function Account() {
             ) : subscription ? (
               <div className="space-y-4">
                 {/* Current Plan Info */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-800">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-background">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-full bg-red-500/20">
                       <Crown className="w-6 h-6 text-red-500" />
@@ -162,7 +161,7 @@ export default function Account() {
 
                 {/* Plan Features */}
                 {subscription.plan?.features && (
-                  <div className="p-4 rounded-lg bg-gray-800">
+                  <div className="p-4 rounded-lg bg-background">
                     <h4 className="font-semibold text-white mb-3">Plan Features:</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {subscription.plan.features.map((feature, index) => (
@@ -177,7 +176,7 @@ export default function Account() {
 
                 {/* Usage Stats */}
                 {subscription.usage && (
-                  <div className="p-4 rounded-lg bg-gray-800">
+                  <div className="p-4 rounded-lg bg-background">
                     <h4 className="font-semibold text-white mb-3">Usage This Month:</h4>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Ads Generated:</span>
@@ -194,45 +193,16 @@ export default function Account() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowPricingModal(true)}
-                    className="flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-6 py-2 bg-brand hover:bg-brand-dark text-white rounded-lg transition-colors"
                   >
                     <Crown className="w-4 h-4" />
                     Upgrade Plan
-                  </button>
-                  
-                  <button
-                    onClick={async () => {
-                      try {
-                        // Call the portal endpoint to get the portal URL
-                        const response = await fetch('/api/v1/subscriptions/portal', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                          }
-                        });
-                        
-                        const result = await response.json();
-                        if (result.success && result.data?.portal_url) {
-                          window.open(result.data.portal_url, '_blank');
-                        } else {
-                          alert('Unable to access billing portal');
-                        }
-                      } catch (error) {
-                        console.error('Error opening billing portal:', error);
-                        alert('Unable to access billing portal');
-                      }
-                    }}
-                    className="flex items-center gap-2 px-6 py-2 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white rounded-lg transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Manage Billing
                   </button>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="p-4 rounded-lg bg-gray-800">
+                <div className="p-4 rounded-lg bg-background">
                   <Crown className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-white mb-2">No Active Subscription</h3>
                   <p className="text-gray-400 mb-4">
@@ -240,7 +210,7 @@ export default function Account() {
                   </p>
               <button
                     onClick={() => setShowPricingModal(true)}
-                    className="flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors mx-auto"
+                    className="flex items-center gap-2 px-6 py-2 bg-brand hover:bg-brand-dark text-white rounded-lg transition-colors mx-auto"
               >
                     <Crown className="w-4 h-4" />
                     Choose Plan
@@ -278,7 +248,7 @@ export default function Account() {
             </div>
 
             {/* Change password */}
-            <div className="p-4 rounded-lg bg-bg-dark">
+            <div className="p-4 rounded-lg bg-bg-light">
               <div className="mb-4">
                 <p className="font-semibold text-lg flex items-center gap-2">
                   <Lock className="w-5 h-5 text-red-500" />
@@ -342,7 +312,7 @@ export default function Account() {
 
 function Section({ title, icon, children }) {
   return (
-    <div className="border border-brand/20  rounded-lg bg-bg-dark p-6">
+    <div className="border border-brand/20  rounded-lg bg-bg-light p-6">
       <div className="flex items-center gap-3 mb-4">
         {icon}
         <h2 className="text-2xl font-bold">{title}</h2>

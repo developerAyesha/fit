@@ -122,12 +122,37 @@ export const facebookService = {
   ,
 
   // Create Facebook Ad
-  createAd: async (payload) => {
+  createAd: async (payload, mediaFile = null) => {
     try {
-      console.log("🚀 Sending ad creation request to:", "/facebook/create-ad");
+      console.log("🚀 Sending ad creation request to:", "/facebook/create-ad-with-media");
       console.log("📦 Payload:", JSON.stringify(payload, null, 2));
+      console.log("📁 Media File:", mediaFile ? { name: mediaFile.name, size: mediaFile.size, type: mediaFile.type } : "No media file");
       
-      const response = await Axios.post("/facebook/create-ad", payload);
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Add all payload fields to FormData
+      Object.keys(payload).forEach(key => {
+        if (payload[key] !== null && payload[key] !== undefined) {
+          if (typeof payload[key] === 'object') {
+            formData.append(key, JSON.stringify(payload[key]));
+          } else {
+            formData.append(key, payload[key]);
+          }
+        }
+      });
+      
+      // Add media file if provided
+      if (mediaFile) {
+        formData.append('media', mediaFile);
+      }
+      
+      const response = await Axios.post("/facebook/create-ad-with-media", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       console.log("✅ Ad creation response:", response.data);
       return { data: response.data, error: null };
     } catch (error) {

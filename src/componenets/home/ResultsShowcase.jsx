@@ -6,7 +6,8 @@ import { useRef } from "react";
 const StatCard = ({ label, value, dateRange, index, isInView }) => {
   return (
     <motion.div 
-      className="bg-[#FE0010] p-4 rounded-lg"
+      className="p-4 rounded-lg"
+      style={{ backgroundColor: "var(--color-brand-dark)" }}
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       animate={isInView ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
       transition={{
@@ -16,10 +17,10 @@ const StatCard = ({ label, value, dateRange, index, isInView }) => {
       }}
       whileHover={{ 
         scale: 1.05,
-        boxShadow: "0 10px 30px rgba(254, 0, 16, 0.3)"
+        boxShadow: "0 10px 30px rgba(250, 42, 0, 0.3)"
       }}
     >
-      <p className="text-sm text-gray-400">{label}</p>
+      <p className="text-sm text-white/90 font-medium">{label}</p>
       <motion.p 
         className="text-xl font-bold text-white"
         initial={{ opacity: 0 }}
@@ -28,7 +29,7 @@ const StatCard = ({ label, value, dateRange, index, isInView }) => {
       >
         {value}
       </motion.p>
-      <p className="text-xs text-gray-500">{dateRange}</p>
+      <p className="text-xs text-white/70 font-medium">{dateRange}</p>
     </motion.div>
   );
 };
@@ -36,7 +37,10 @@ const StatCard = ({ label, value, dateRange, index, isInView }) => {
 const PerformanceBlock = ({ title, stats, fbMetrics, blockIndex, isInView }) => {
   return (
     <motion.div 
-      className="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-[#FE0010] transition-colors"
+      className="bg-background p-6 rounded-xl border border-gray-800 transition-colors"
+      style={{ "--hover-border": "var(--color-brand)" }}
+      onMouseEnter={(e) => e.target.style.borderColor = "var(--color-brand)"}
+      onMouseLeave={(e) => e.target.style.borderColor = "rgb(30, 26, 38)"}
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{
@@ -77,7 +81,7 @@ const PerformanceBlock = ({ title, stats, fbMetrics, blockIndex, isInView }) => 
 
       {/* Facebook Metrics */}
       <motion.div 
-        className="bg-gray-800 p-4 rounded-lg border border-gray-700"
+        className="bg-bg-dark p-4 rounded-lg border border-gray-700"
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{
@@ -93,7 +97,7 @@ const PerformanceBlock = ({ title, stats, fbMetrics, blockIndex, isInView }) => 
             transition={{ delay: 1.4 + blockIndex * 0.2 }}
           >
             <span>Cost per lead:</span>
-            <span className="text-white font-medium">{fbMetrics.costPerLead}</span>
+            <span className="font-bold" style={{ color: "var(--color-brand)" }}>{fbMetrics.costPerLead}</span>
           </motion.div>
           <motion.div 
             className="flex justify-between"
@@ -102,7 +106,7 @@ const PerformanceBlock = ({ title, stats, fbMetrics, blockIndex, isInView }) => 
             transition={{ delay: 1.5 + blockIndex * 0.2 }}
           >
             <span>Amount spent:</span>
-            <span className="text-white font-medium">{fbMetrics.amountSpent}</span>
+            <span className="font-bold" style={{ color: "var(--color-brand)" }}>{fbMetrics.amountSpent}</span>
           </motion.div>
         </div>
       </motion.div>
@@ -112,7 +116,7 @@ const PerformanceBlock = ({ title, stats, fbMetrics, blockIndex, isInView }) => 
 
 export default function ResultsShowcase() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
 
   const performanceData = [
     {

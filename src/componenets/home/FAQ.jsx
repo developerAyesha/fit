@@ -7,7 +7,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 export default function FAQ() {
   const [openItems, setOpenItems] = useState([]);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: false });
 
   const toggleItem = (index) => {
     setOpenItems((prev) =>
@@ -93,9 +93,10 @@ export default function FAQ() {
           >
             Frequently Asked{" "}
             <motion.span 
-              className="bg-red-600 text-white px-3 py-1 rounded-lg transform -rotate-2 inline-block"
-              initial={{ scale: 0, rotate: -10 }}
-              animate={isInView ? { scale: 1, rotate: -2 } : { scale: 0, rotate: -10 }}
+              className="text-white px-3 py-1 rounded-lg inline-block"
+              style={{ backgroundColor: "var(--color-brand)" }}
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : { scale: 0 }}
               transition={{ 
                 duration: 0.5, 
                 delay: 0.5,
@@ -146,23 +147,41 @@ export default function FAQ() {
                   transition={{ duration: 0.2 }}
                 >
                   <motion.span 
-                    className="text-lg font-bold text-white pr-6 group-hover:text-red-500 transition-colors duration-200"
+                    className="text-lg font-bold text-white pr-6 transition-colors duration-200"
+                    style={{ 
+                      color: "white",
+                      "--hover-color": "var(--color-brand)"
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = "var(--color-brand)"}
+                    onMouseLeave={(e) => e.target.style.color = "white"}
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                     transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
                   >
                     {faq.question}
                   </motion.span>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 45 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {isOpen ? (
-                      <Minus className="h-6 w-6 text-red-500 transition-transform duration-200" />
-                    ) : (
-                      <Plus className="h-6 w-6 text-gray-400 group-hover:text-red-500 transition-colors duration-200" />
-                    )}
-                  </motion.div>
+                  <div className="flex items-center justify-center relative">
+                    <motion.div
+                      animate={{ scale: isOpen ? 0 : 1, opacity: isOpen ? 0 : 1 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute"
+                    >
+                      <Plus className="h-6 w-6 text-gray-400 transition-colors duration-200" 
+                            style={{ 
+                              "--hover-color": "var(--color-brand)"
+                            }}
+                            onMouseEnter={(e) => e.target.style.color = "var(--color-brand)"}
+                            onMouseLeave={(e) => e.target.style.color = "rgb(156, 163, 175)"} />
+                    </motion.div>
+                    <motion.div
+                      animate={{ scale: isOpen ? 1 : 0, opacity: isOpen ? 1 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute"
+                    >
+                      <Minus className="h-6 w-6 transition-colors duration-200" 
+                             style={{ color: "var(--color-brand)" }} />
+                    </motion.div>
+                  </div>
                 </motion.button>
 
                 <AnimatePresence>
@@ -182,11 +201,14 @@ export default function FAQ() {
                       >
                         <div className="flex items-start gap-4">
                           <motion.div 
-                            className="flex-shrink-0 w-1 h-full bg-gradient-to-b from-red-600 to-red-400 rounded-full"
+                            className="flex-shrink-0 w-1 h-full rounded-full"
+                            style={{ 
+                              background: `linear-gradient(to bottom, var(--color-brand), var(--color-brand-dark))`,
+                              transformOrigin: "top"
+                            }}
                             initial={{ scaleY: 0 }}
                             animate={{ scaleY: 1 }}
                             transition={{ duration: 0.4, delay: 0.2 }}
-                            style={{ transformOrigin: "top" }}
                           />
                           <motion.div 
                             className="flex-1"

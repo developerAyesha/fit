@@ -10,6 +10,7 @@ const PricingModal = ({ isOpen, onClose, onPlanSelect }) => {
   const { plans, loading: plansLoading } = usePlans();
   const { subscription, loading: subscriptionLoading } = useSubscription();
 
+
   if (!isOpen) return null;
 
   const handleUpgrade = (plan) => {
@@ -21,7 +22,7 @@ const PricingModal = ({ isOpen, onClose, onPlanSelect }) => {
     // Close the modal first
     onClose();
     
-    // Redirect to checkout page with plan ID (same as home page)
+    // Redirect to checkout page with plan ID
     router.push(`/checkout?plan=${plan._id}`);
   };
 
@@ -71,7 +72,6 @@ const PricingModal = ({ isOpen, onClose, onPlanSelect }) => {
 
   const isCurrentPlan = (planId) => {
     // Check if the plan ID matches the current subscription plan
-    // The API returns plan object directly, so we need to find the matching plan by name
     if (!subscription?.plan?.name || !plans.length) return false;
     
     // Find the plan in the plans array that matches the current subscription plan name

@@ -40,11 +40,15 @@ export const useOnboarding = () => {
     const visual = ob.visual || {};
     const brand = ob.brand || {};
     const customer = ob.customer || {};
+    const campaign = ob.campaign || {};
+    const social = ob.social || {};
 
     return {
       business_name: business.business_name || "",
       business_type: business.business_type || "",
       business_city: business.business_city || "",
+      website_url: business.website_url || "",
+      brand_colors: Array.isArray(visual.brand_colors) ? visual.brand_colors : (visual.brand_colors || []),
       target_market: customer.target_market || "",
       voice_tone_style: visual.voice_tone_style || brand.voice_tone_style || "",
       coaching_style: brand.coaching_style || "",
@@ -54,12 +58,17 @@ export const useOnboarding = () => {
       failed_solutions: customer.failed_solutions || "",
       client_words: customer.client_words || "",
       magic_wand_result: customer.magic_wand_result || "",
-      website_url: business.website_url || ""
+      campaign_types: Array.isArray(campaign.campaign_types) ? campaign.campaign_types : (campaign.campaign_types || []),
+      seasonal_launch_options: Array.isArray(campaign.seasonal_launch_options) ? campaign.seasonal_launch_options : (campaign.seasonal_launch_options || []),
+      instagram_reel_url: social.instagram_reel_url || "",
+      meta_account: social.meta_account || "",
+      competitor_urls: Array.isArray(social.competitor_urls) ? social.competitor_urls : (social.competitor_urls || []),
     };
   }, [onboarding]);
 
   return { onboarding, brandData, loading, error };
 };
+
 
 
 

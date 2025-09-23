@@ -71,17 +71,17 @@ export default function CheckoutSuccessPage() {
 						<Button
 							variant="primary"
 							onClick={() => router.push("/dashboard")}
-							className="flex-1 flex items-center justify-center"
+							className="flex-1 flex items-center justify-center gap-2"
 						>
-							<CreditCard className="h-4 w-4 mr-2" />
+							<CreditCard className="h-4 w-4" />
 							Go to Dashboard
 						</Button>
 						<Button
-							variant="outline"
-							onClick={() => router.push("/generate")}
-							className="flex-1 flex items-center justify-center"
+							variant="primary"
+							onClick={() => router.push("/dashboard/generate")}
+							className="flex-1 flex items-center justify-center gap-2"
 						>
-							<ArrowRight className="h-4 w-4 mr-2" />
+							<ArrowRight className="h-4 w-4" />
 							Create Your First Ad
 						</Button>
 					</div>

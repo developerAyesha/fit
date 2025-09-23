@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import Button from "@/utils/Button";
 import { facebookService } from "@/services/facebookService";
+import { toast } from "@/lib/toast";
 
 
 const FiveAdTypesGenerator = () => {
@@ -43,43 +44,83 @@ const FiveAdTypesGenerator = () => {
   
   // Currency state
   const [accountCurrency, setAccountCurrency] = useState(null);
-  const [minBudget, setMinBudget] = useState(500000);
+  const [minBudget, setMinBudget] = useState(500); // Default to GBP minimum
   const [currencySymbol, setCurrencySymbol] = useState('£');
+  const [currencyLoading, setCurrencyLoading] = useState(false);
+  
+  // Currency-specific minimum budgets
+  const CURRENCY_MIN_BUDGETS = {
+    'GBP': 500,    // £5.00 in pence (Facebook's UK minimum)
+    'PKR': 29000   // ₨290.00 in paisa (Facebook's Pakistan minimum)
+  };
+  
+  const CURRENCY_SYMBOLS = {
+    'GBP': '£',
+    'PKR': '₨'
+  };
   
   // Fetch account currency when user has Facebook connection
   useEffect(() => {
-    const fetchAccountCurrency = async () => {
-      if (user?.selected_ad_account_id) {
+    let isMounted = true;
     
+    const fetchAccountCurrency = async () => {
+      if (user?.selected_ad_account_id && !currencyLoading && isMounted) {
+        setCurrencyLoading(true);
+        console.log(" [Frontend Component] Starting currency fetch for:", user.selected_ad_account_id);
+        
         try {
           const { data, error } = await facebookService.getAccountInfo(user.selected_ad_account_id);
-          console.log("🔍 [Frontend Component] getAccountInfo result:", { data, error });
+          console.log(" [Frontend Component] getAccountInfo result:", { data, error });
           
-          if (data && !error) {
-           
-            setAccountCurrency(data.currency);
-            setMinBudget(50000);
-            setCurrencySymbol(data.currencySymbol);
+          if (data && !error && isMounted) {
+            const currency = data?.data?.currency;
+            console.log("currency of account",currency);
+            
+            setAccountCurrency(currency);
+            
+            // Set currency-specific minimum budget and symbol
+            if (CURRENCY_MIN_BUDGETS[currency]) {
+              setMinBudget(CURRENCY_MIN_BUDGETS[currency]);
+              setCurrencySymbol(CURRENCY_SYMBOLS[currency] || currency);
+            } else {
+              // Default to GBP if currency not supported
+              setMinBudget(CURRENCY_MIN_BUDGETS['GBP']);
+              setCurrencySymbol(CURRENCY_SYMBOLS['GBP']);
+            }
+          } else if (!isMounted) {
+            console.log(" [Frontend Component] Component unmounted, skipping state update");
           } else {
             console.error("[Frontend Component] Error in getAccountInfo:", error);
           }
         } catch (error) {
-          console.error('[Frontend Component] Failed to fetch account currency:', error);
+          if (isMounted) {
+            console.error('[Frontend Component] Failed to fetch account currency:', error);
+          }
+        } finally {
+          if (isMounted) {
+            setCurrencyLoading(false);
+          }
         }
-      } else {
+      } else if (!user?.selected_ad_account_id) {
         console.log(" [Frontend Component] No selected_ad_account_id, skipping currency fetch");
+      } else if (currencyLoading) {
+        console.log(" [Frontend Component] Currency fetch already in progress, skipping");
       }
     };
     
     fetchAccountCurrency();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [user?.selected_ad_account_id]);
 
   // Dynamic validation schema based on account currency
   const campaignValidationSchema = z.object({
     daily_budget: z
       .number({ message: "Daily budget is required" })
-      .min(minBudget, `Daily budget must be at least 50000`)
-      .max(1000000, `Daily budget cannot exceed ${currencySymbol}10,000.00`),
+      .min(minBudget, `Daily budget must be at least ${currencySymbol}${(minBudget / (accountCurrency === 'PKR' ? 100 : 1)).toFixed(2)}`)
+      .max(accountCurrency === 'PKR' ? 10000000 : 1000000, `Daily budget cannot exceed ${currencySymbol}${accountCurrency === 'PKR' ? '100,000.00' : '10,000.00'}`),
     campaign_objective: z
       .string({ message: "Campaign objective is required" })
       .refine((val) => ["OUTCOME_TRAFFIC", "OUTCOME_LEADS", "OUTCOME_ENGAGEMENT", "OUTCOME_SALES"].includes(val), {
@@ -341,7 +382,7 @@ const FiveAdTypesGenerator = () => {
 
   const handleGenerateFiveAdTypes = handleSubmit(async (formData) => {
     if (!selectedCampaign) {
-      alert('Please select a campaign first');
+      toast.error('Please select a campaign first');
       return;
     }
 
@@ -370,7 +411,7 @@ const FiveAdTypesGenerator = () => {
       
     } catch (error) {
       console.error('Error generating five ad types:', error);
-      alert('Error generating content. Please try again.');
+      toast.error('Error generating content. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -432,7 +473,7 @@ const FiveAdTypesGenerator = () => {
       
     } catch (error) {
       console.error(`Error regenerating ${adType}:`, error);
-      alert(`Error regenerating ${adType}. Please try again.`);
+      toast.error(`Error regenerating ${adType}. Please try again.`);
     } finally {
       setRegeneratingStates(prev => ({ ...prev, [adType]: false }));
     }
@@ -457,13 +498,62 @@ const FiveAdTypesGenerator = () => {
     }));
   };
 
+  // File validation constants
+  const MAX_IMAGE_SIZE = 8 * 1024 * 1024; // 8MB in bytes
+  const MAX_VIDEO_SIZE = 4 * 1024 * 1024; // 4MB in bytes
+
+  // File validation function
+  const validateFile = (file) => {
+    const errors = [];
+    
+    if (!file) {
+      errors.push("No file selected");
+      return errors;
+    }
+
+    // Check file type
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    
+    if (!isImage && !isVideo) {
+      errors.push("File must be an image or video");
+      return errors;
+    }
+
+    // Check file size
+    if (isImage && file.size > MAX_IMAGE_SIZE) {
+      errors.push(`Image size must be less than 8MB (current: ${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+    }
+    
+    if (isVideo && file.size > MAX_VIDEO_SIZE) {
+      errors.push(`Video size must be less than 4MB (current: ${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+    }
+
+    return errors;
+  };
+
   const handleMediaUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      const validationErrors = validateFile(file);
+      
+      if (validationErrors.length > 0) {
+        // Show validation errors
+        toast.error(`File validation failed: ${validationErrors.join(', ')}`);
+        // Clear the input
+        event.target.value = '';
+        return;
+      }
+      
       setMediaFile(file);
-      // Create a preview URL for the uploaded file
-      const previewUrl = URL.createObjectURL(file);
-      setMediaUrl(previewUrl);
+      // Clear URL input when file is uploaded
+      setMediaUrl("");
+      
+      console.log("✅ File uploaded successfully:", {
+        name: file.name,
+        size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+        type: file.type
+      });
     }
   };
 
@@ -540,8 +630,9 @@ const FiveAdTypesGenerator = () => {
 
       console.log("Ad creation payload:", payload);
       console.log("Website URL being sent:", payload.website_url);
+      console.log("Media file being sent:", mediaFile ? { name: mediaFile.name, size: mediaFile.size, type: mediaFile.type } : "No media file");
 
-      const { data, error } = await facebookService.createAd(payload);
+      const { data, error } = await facebookService.createAd(payload, mediaFile);
       if (error) {
         console.error("❌ Facebook service error:", error);
         
@@ -553,7 +644,7 @@ const FiveAdTypesGenerator = () => {
         throw new Error(`${error.message} (Status: ${error.status})`);
       }
 
-      alert("Ad created successfully!");
+      toast.success("Ad created successfully!");
       console.log("✅ Facebook Ad creation response:", data);
     } catch (err) {
       console.error("❌ Failed to create Facebook Ad:", err);
@@ -574,7 +665,7 @@ const FiveAdTypesGenerator = () => {
       }
       
       // Show step-specific error message
-      alert(`❌ Facebook Ad Creation Failed\n\nStep: ${errorStep}\nError: ${errorMessage}\n\nPlease check your campaign settings and try again.`);
+      toast.error(`Facebook Ad Creation Failed - Step: ${errorStep} - Error: ${errorMessage}`);
     }
   };
 
@@ -849,9 +940,9 @@ const FiveAdTypesGenerator = () => {
                  <input
   type="number"
   {...register('daily_budget', { valueAsNumber: true })}
-  placeholder={`Enter daily budget in ${accountCurrency || 'currency'} (minimum: 5000 = ${currencySymbol}${(5000 / 100).toFixed(2)})`}
-  min={5000}
-  max="1000000"
+  placeholder={`Enter daily budget in ${accountCurrency || 'currency'} (minimum: ${minBudget} = ${currencySymbol}${(minBudget / (accountCurrency === 'PKR' ? 100 : 1)).toFixed(2)})`}
+  min={minBudget}
+  max={accountCurrency === 'PKR' ? 10000000 : 1000000}
   className={`w-full px-4 py-3 bg-bg-dark text-white rounded-lg border focus:outline-none ${
     errors.daily_budget ? 'border-red-500' : 'border-gray-600 focus:border-red-500'
   }`}
@@ -860,12 +951,10 @@ const FiveAdTypesGenerator = () => {
                   {errors.daily_budget && (
                     <p className="text-brand text-sm mt-2">{errors.daily_budget.message}</p>
                   )}
-                  {/* <p className="text-gray-400 text-sm mt-2">
-                    Minimum: {currencySymbol}{(minBudget / 100).toFixed(2)} ({minBudget} {accountCurrency || 'units'})
-                  </p> */}
-                  {/* <p className="text-yellow-400 text-sm mt-1">
-                    ⚠️ Note: Your Facebook account uses {accountCurrency || 'your account currency'}. Budget requirements are automatically adjusted.
-                  </p> */}
+                  <p className="text-gray-400 text-sm mt-2">
+                    Minimum: {currencySymbol}{(minBudget / (accountCurrency === 'PKR' ? 100 : 1)).toFixed(2)} ({minBudget} {accountCurrency === 'PKR' ? 'paisa' : 'pence'})
+                  </p>
+                 
                   {/* Debug info - remove in production */}
                   {/* <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-900 rounded">
                     <strong>Debug Info:</strong><br/>
@@ -1099,7 +1188,7 @@ const FiveAdTypesGenerator = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-400">Daily Budget:</span>
-                      <span className="text-white ml-2">{currencySymbol}{(watchedValues.daily_budget / 100).toFixed(2)} ({accountCurrency})</span>
+                      <span className="text-white ml-2">{currencySymbol}{(watchedValues.daily_budget / (accountCurrency === 'PKR' ? 100 : 1)).toFixed(2)} ({accountCurrency})</span>
                     </div>
                     <div>
                       <span className="text-gray-400">Objective:</span>
@@ -1163,6 +1252,9 @@ const FiveAdTypesGenerator = () => {
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Upload Image/Video (Optional)
                       </label>
+                      <p className="text-gray-400 text-xs mb-2">
+                        Maximum file size: 8MB for images, 4MB for videos
+                      </p>
                       <input
                         type="file"
                         accept="image/*,video/*"
@@ -1176,19 +1268,8 @@ const FiveAdTypesGenerator = () => {
                       )}
                     </div>
 
-                    {/* URL Input */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Or Enter Media URL
-                      </label>
-                      <input
-                        type="url"
-                        value={mediaUrl}
-                        onChange={handleMediaUrlChange}
-                        placeholder="https://example.com/image.jpg"
-                        className="w-full px-4 py-3 bg-bg-dark text-white rounded-lg border border-gray-600 focus:outline-none focus:border-red-500"
-                      />
-                    </div>
+                 
+               
 
                     {/* Media Preview */}
                     {(mediaFile || mediaUrl) && (
