@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import OnboardingWizard from "@/componenets/onboarding/onboardingWizard";
 import { useAuth } from "@/context/authContext";
@@ -7,7 +7,7 @@ import TokenManager from "@/utils/tokenManager";
 import { authService } from "@/services/authService";
 import { toast } from "@/lib/toast";
 
-export default function Dashboard() {
+function OnboardingContent() {
   const { user, loading, logout, fetchUser } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -72,5 +72,26 @@ export default function Dashboard() {
     <div>
      <OnboardingWizard/>
     </div>
+  );
+}
+
+// Loading component for Suspense
+function OnboardingLoading() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+        <p className="text-gray-400">Loading onboarding...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component wrapped in Suspense
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<OnboardingLoading />}>
+      <OnboardingContent />
+    </Suspense>
   );
 }
