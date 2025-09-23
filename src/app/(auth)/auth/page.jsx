@@ -41,9 +41,11 @@ const Auth = () => {
 //     return data?.completed_at !== null;
 //   };
 
-  const handleGoogleSignIn = () => {
-    window.location.href = "http://localhost:5000/api/v1/auth/google";
-  };
+
+const handleGoogleSignIn = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api/v1";
+  window.location.href = `${baseUrl}/auth/google`;
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

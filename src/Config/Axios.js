@@ -2,7 +2,7 @@ import axios from "axios";
 import TokenManager from "../utils/tokenManager.js";
 
 const Axios = axios.create({
-  baseURL: "http://localhost:5000/api/v1/", // your backend base URL
+  baseURL: process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api/v1", // your backend base URL
   withCredentials: true, //  always send cookies
   headers: {
     "Content-Type": "application/json",
@@ -17,15 +17,10 @@ Axios.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     
     } else {
-     
-      
-    
-     
     }
     return config;
   },
   (error) => {
-    
     return Promise.reject(error);
   }
 );
@@ -34,7 +29,6 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
   (response) => {
   
-    
     // Check if this is a login response with access token
     if (response.config.url?.includes('/auth/login') && response.data?.data?.accessToken) {
       const accessToken = response.data.data.accessToken;
@@ -46,11 +40,9 @@ Axios.interceptors.response.use(
     // Check if this is a register response with access token
     if (response.config.url?.includes('/auth/register') && response.data?.data?.accessToken) {
       const accessToken = response.data.data.accessToken;
-     
       TokenManager.setAccessToken(accessToken);
    
     }
-    
     return response;
   },
   (error) => {
@@ -66,7 +58,7 @@ Axios.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
